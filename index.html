@@ -1,50 +1,79 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Loading...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
   <script>
-    async function redirect() {
+    // ------------------------------
+    // 配置区域
+    // ------------------------------
+    const ENABLE_REDIRECT = true; // false = 广告暂停，显示安全内容页
+    const MAIN_JSON_URL = "https://liuhongliang11895.github.io/-/";
+    const LOCAL_KEY = "lastActiveLinks";
+
+    let activeLinks = [];
+
+    // ------------------------------
+    // 拉取主控仓库 JSON
+    // ------------------------------
+    async function fetchLinks() {
       try {
-        const res = await fetch("mapping.json?ts=" + Date.now()); // 防缓存
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(MAIN_JSON_URL + "?ts=" + Date.now(), {
+          cache: "no-store",
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+
         const data = await res.json();
-        const activeLinks = data.links.filter(l => l.active);
+        activeLinks = data.links.filter(l => l.active);
 
-        if (activeLinks.length === 0) return;
+        if (!activeLinks.length) throw new Error("No active links available");
 
-        // --- 读取已访问过的链接 ---
-        const visited = JSON.parse(localStorage.getItem("visitedLinks") || "[]");
+        // 缓存到 localStorage，用于 fallback
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(activeLinks));
 
-        // --- 过滤掉已访问的 ---
-        let available = activeLinks.filter(l => !visited.includes(l.url));
-
-        // --- 如果全都访问过，则重置（重新开始） ---
-        if (available.length === 0) {
-          localStorage.removeItem("visitedLinks");
-          available = activeLinks;
-        }
-
-        // --- 平均分配：随机从剩余中取一个 ---
-        const target = available[Math.floor(Math.random() * available.length)];
-
-        // --- 记录这次访问 ---
-        visited.push(target.url);
-        localStorage.setItem("visitedLinks", JSON.stringify(visited));
-
-        // --- 跳转 ---
-        window.location.replace(target.url);
-
-      } catch (e) {
-        console.error("跳转失败：", e);
-        document.body.innerHTML = "<h2>加载失败，请稍后重试。</h2>";
+      } catch (err) {
+        console.error("Fetch failed:", err);
+        // fallback：从上次缓存中随机选择
+        activeLinks = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
       }
     }
 
-    redirect();
+    // ------------------------------
+    // 随机跳转
+    // ------------------------------
+    function redirectUser() {
+      if (!activeLinks.length) {
+        document.body.innerHTML = "<h2>No active links available today.</h2>";
+        return;
+      }
+      const idx = Math.floor(Math.random() * activeLinks.length);
+      window.location.replace(activeLinks[idx].url);
+    }
+
+    // ------------------------------
+    // 页面初始化
+    // ------------------------------
+    window.onload = async function() {
+      if (!ENABLE_REDIRECT) {
+        // 广告暂停或素材审核 → 显示安全内容页
+        document.body.innerHTML = "<h2>Content temporarily unavailable.</h2><p>Please check back later.</p>";
+        return;
+      }
+
+      // 拉取链接
+      await fetchLinks();
+
+      // ⚡ 立即跳转
+      redirectUser();
+    };
   </script>
 </head>
 <body>
+  <p>Loading...</p>
 </body>
 </html>
 
