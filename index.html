@@ -3,35 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Guide for You</title>
+<title>Exclusive Free Guide</title>
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f7f7f7; }
-  .container { max-width: 480px; margin: 40px auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,0.1); text-align:center; }
-  h1 { font-size:22px; color:#333; margin-bottom:10px; }
-  p { font-size:16px; color:#555; margin-bottom:20px; }
-  input[type=text], input[type=email] { width: 100%; padding:12px; margin:5px 0 15px 0; border:1px solid #ccc; border-radius:6px; font-size:16px; }
-  button { background:#28a745; color:#fff; border:none; padding:14px 22px; font-size:16px; border-radius:6px; cursor:pointer; width:100%; }
-  button:hover { background:#218838; }
-  .trust { font-size:14px; color:#888; margin-top:15px; }
+  body { margin:0; padding:0; font-family: 'Segoe UI', Arial; background:#f3f6f9; color:#333; }
+  .wrapper { max-width:520px; margin:30px auto; background:#fff; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow:hidden; }
+  .header { background:#4caf50; color:#fff; text-align:center; padding:25px 20px; }
+  .header h1 { margin:0; font-size:24px; }
+  .header p { margin:8px 0 0; font-size:16px; }
+  .content { padding:20px; }
+  .benefits { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+  .benefit { display:flex; align-items:center; gap:10px; font-size:15px; }
+  .benefit span { color:#4caf50; font-weight:bold; }
+  form { display:flex; flex-direction:column; gap:12px; }
+  input[type=text], input[type=email] { padding:12px; border-radius:6px; border:1px solid #ccc; font-size:15px; width:100%; box-sizing:border-box; }
+  button { padding:14px; border:none; border-radius:6px; background:#ff5722; color:#fff; font-size:16px; cursor:pointer; transition:0.2s; width:100%; }
+  button:hover { background:#e64a19; }
+  .trust { font-size:13px; color:#777; text-align:center; margin-top:18px; }
+  .footer { background:#f7f7f7; text-align:center; font-size:12px; color:#aaa; padding:12px; }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Get Your Free Guide!</h1>
-  <p>Fill in your details below and get instant access.</p>
-
-  <!-- FB内嵌兼容表单 -->
-  <form action="https://your-backend-url.com/submit" method="POST">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="email" name="email" placeholder="Your Email" required>
-    <button type="submit">Get Access Now</button>
-  </form>
-
-  <div class="trust">
-    ✅ Trusted by 1,000+ users in India<br>
-    🔒 We respect your privacy
+<div class="wrapper">
+  <div class="header">
+    <h1>Get Your Exclusive Free Guide!</h1>
+    <p>Boost your skills in just 5 minutes a day</p>
   </div>
+  <div class="content">
+    <div class="benefits">
+      <div class="benefit"><span>✔</span> Learn top strategies used by 1,000+ Indians</div>
+      <div class="benefit"><span>✔</span> Easy-to-follow steps, no experience needed</div>
+      <div class="benefit"><span>✔</span> Completely free & instant access</div>
+    </div>
+
+    <form action="https://your-backend-url.com/submit" method="POST">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <button type="submit">Get My Free Guide</button>
+    </form>
+
+    <div class="trust">
+      ✅ Trusted by 1,500+ users in India | 🔒 100% Privacy Protected
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  &copy; 2026 YourCompany. All rights reserved.
 </div>
 
 </body>
